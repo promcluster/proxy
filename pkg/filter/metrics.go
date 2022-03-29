@@ -14,7 +14,7 @@ import (
 	bloom "github.com/steakknife/bloomfilter"
 )
 
-var namespace = "promcluster-proxy"
+var namespace = "promclusterproxy"
 var subsystem = "filter"
 
 const probCollide = 0.000001
