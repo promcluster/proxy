@@ -1,0 +1,58 @@
+api:
+  listen: "0.0.0.0:80"
+  ## Default max HTTP body size limit size: 10 MB
+  maxBodySizeLimit: 10485760
+  pprof: false
+  ## Rate limiter with a maximum number of operations
+  ## to perform per second.
+  rateLimit: 100
+  ## The maximum number of series allowed per instance before writes
+  ## are dropped. The default setting is 1000000 (one million).
+  ## Change the setting to 0 to allow an unlimited number of series.
+  maxSeriesCountLimit: 0
+  ## Default flushing interval for series count.
+  seriesCountFlushInterval: "4h"
+  ## Enable pushgateway API for metrics push mode.
+  pushGatewayEnable: true
+  ## Query API enable, default is true.
+  queryEnable: true
+  ## Address of Query without scheme.
+  queryAddr: "query:80"
+
+auth:
+  enable: true
+  ## Basic Auth's username.
+  user: "prom"
+  ## Checks the `Authorization` header on every write request with
+  ## the configured bearer token, and token also as Basic Auth's pass.
+  token: "changeme"
+
+SD:
+  ## The scheme may be prefixed with 'dns+' or 'dnssrv+'
+  ## to detect query API servers through respective DNS lookups.
+  name: "dns+http://prometheus:9090"
+  ## DNS refresh interval
+  ## unit: second
+  refreshInterval: 30
+
+worker:
+  ## Concurrency workers number.
+  num: 20
+
+queue:
+  ## Disk or memory are available, if memory type are choosen,
+  ## the following configs are ignored.
+  type: "disk"
+  ## Queue name.
+  name: "promcluster-proxy"
+  ## DataPath stores queue data.
+  dataPath: "/var/promcluster-proxy"
+  ## MsgSizeLimit is used to limit the message size
+  ## unit: byte
+  ## default: 10 MB
+  msgSizeLimit: 10485760
+
+log:
+  ## Determine which level of logs will be emitted.
+  ## error, warn, info, and debug are available
+  level: "info"
