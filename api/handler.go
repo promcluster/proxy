@@ -31,23 +31,10 @@ import (
 func init() {
 	_ = prometheus.Register(numOfSendErrors)
 	_ = prometheus.Register(numOfSendSuccess)
+	_ = prometheus.Register(httpPushSize)
+	_ = prometheus.Register(httpPushDuration)
 }
 
-var numOfSendErrors = prometheus.NewCounterVec(
-	prometheus.CounterOpts{
-		Name: "numOfSendErrors",
-		Help: "count send error by type",
-	},
-	[]string{"type"},
-)
-
-var numOfSendSuccess = prometheus.NewCounterVec(
-	prometheus.CounterOpts{
-		Name: "numOfSendSuccess",
-		Help: "count send success by type",
-	},
-	[]string{"type"},
-)
 
 // ServePromWrite handles prometheus remote write requests.
 func (s *Service) ServePromWrite(c *gin.Context) {
@@ -78,6 +65,7 @@ func (s *Service) ServePromWrite(c *gin.Context) {
 // Push implements pushgateway handler.
 func (s *Service) Push(jobBase64Encoded bool) func(c *gin.Context) { //nolint: gocognit
 	h := func(c *gin.Context) {
+		start := time.Now()
 		if !s.pushGatewayEnable {
 			http.Error(c.Writer, "pushGateway mode not enabled", http.StatusInternalServerError)
 			return
@@ -91,6 +79,8 @@ func (s *Service) Push(jobBase64Encoded bool) func(c *gin.Context) { //nolint: g
 				return
 			}
 		}
+
+		httpPushSize.WithLabelValues(c.Request.Method).Observe(float64(c.Request.ContentLength))
 
 		job := c.Param("job")
 		if jobBase64Encoded {
@@ -158,6 +148,7 @@ func (s *Service) Push(jobBase64Encoded bool) func(c *gin.Context) { //nolint: g
 			return
 		}
 		c.Writer.WriteHeader(http.StatusAccepted)
+		httpPushDuration.WithLabelValues(c.Request.Method).Observe(time.Since(start).Seconds())
 	}
 	return h
 }
