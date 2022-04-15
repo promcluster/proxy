@@ -14,7 +14,7 @@ import (
 	"go.uber.org/zap"
 )
 
-var namespace = "promclusterproxy"
+var namespace = "proxy"
 var subsystem = "backend"
 
 var (

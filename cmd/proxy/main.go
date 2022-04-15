@@ -27,7 +27,7 @@ import (
 var configFile string
 
 func init() {
-	prometheus.MustRegister(version.NewCollector("promcluster_proxy"))
+	prometheus.MustRegister(version.NewCollector("proxy"))
 	flag.StringVar(&configFile, "config", "", "config file")
 	flag.Parse()
 	if err := praseConfig(configFile); err != nil {
