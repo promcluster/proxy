@@ -35,6 +35,11 @@ func init() {
 	_ = prometheus.Register(httpPushDuration)
 }
 
+// Healthy handles healthy check requests.
+func (s *Service) Healthy(c *gin.Context) {
+		c.Writer.WriteHeader(http.StatusOK)
+		fmt.Fprintf(c.Writer, "Prometheus Proxy is Healthy.\n")
+}
 
 // ServePromWrite handles prometheus remote write requests.
 func (s *Service) ServePromWrite(c *gin.Context) {

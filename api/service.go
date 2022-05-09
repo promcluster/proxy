@@ -113,6 +113,8 @@ func (s *Service) Close(ctx context.Context) error {
 }
 
 func (s *Service) initHandler() {
+	s.router.GET("/-/healthy", s.Healthy)
+
 	v1 := s.router.Group("/api/v1/")
 	// remote write API
 	v1.POST("prom/write", s.ServePromWrite)
