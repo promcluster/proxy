@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gogo/protobuf/proto"
@@ -33,6 +34,14 @@ var (
 			Help:      "The success number of samples sended.",
 		},
 		[]string{"endpoint"},
+	)
+	EndpointSendDuration = prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name:    "endpoint_send_duration_seconds",
+			Help:    "The HTTP request to prometheus store latencies in seconds.",
+			Buckets: prometheus.DefBuckets,
+		},
+		[]string{"code", "method", "backend"},
 	)
 )
 
@@ -152,6 +161,7 @@ func (e *HTTPEndpoint) doSend(tmp []*prompb.TimeSeries) {
 		go e.rollback(tmp)
 		return
 	}
+	start := time.Now()
 	resp, err := client.Do(req)
 	if err != nil {
 		EndpointSendFailed.WithLabelValues(e.addr, "httpClientFailed").Inc()
@@ -172,6 +182,8 @@ func (e *HTTPEndpoint) doSend(tmp []*prompb.TimeSeries) {
 	}
 	e.logger.Info("success consum message size:", zap.Int("size", len(data)))
 	EndpointSendSuccess.WithLabelValues(e.addr).Inc()
+	elapsed := time.Since(start).Seconds()
+	EndpointSendDuration.WithLabelValues(strconv.Itoa(resp.StatusCode), req.Method, e.addr).Observe(elapsed)
 }
 
 // Stop stops the task.

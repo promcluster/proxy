@@ -73,7 +73,14 @@ func NewPromServer(
 	concurrency int,
 	interval time.Duration,
 	logger *zap.Logger) *PromServer {
-	reg.MustRegister(SDDNSFailed, SDDNSSuccess, EndpointNum, EndpointSendFailed, EndpointSendSuccess)
+	reg.MustRegister(
+		SDDNSFailed,
+		SDDNSSuccess,
+		EndpointNum,
+		EndpointSendFailed,
+		EndpointSendSuccess,
+		EndpointSendDuration,
+	)
 	p := &PromServer{
 		c:           consistent.NewCrc32(),
 		name:        name,
