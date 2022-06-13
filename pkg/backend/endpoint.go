@@ -37,9 +37,11 @@ var (
 	)
 	EndpointSendDuration = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Name:    "endpoint_send_duration_seconds",
-			Help:    "The HTTP request to prometheus store latencies in seconds.",
-			Buckets: prometheus.DefBuckets,
+			Namespace: namespace,
+			Subsystem: subsystem,
+			Name:      "endpoint_send_duration_seconds",
+			Help:      "The HTTP request to prometheus store latencies in seconds.",
+			Buckets:   prometheus.DefBuckets,
 		},
 		[]string{"code", "method", "backend"},
 	)
